@@ -21,7 +21,8 @@ public class Client {
 	public JFrame frame = new JFrame("Battleships");
 	private JLabel messageLabel = new JLabel("...");
 	
-	private Square[][] board = new Square[10][10];
+	private Square[][] primaryboard = new Square[10][10];
+	private Square[][] trackboard = new Square[10][10];
 	private Square currentSquare;
 	
 	private Socket socket;
@@ -35,25 +36,32 @@ public class Client {
 		out = new PrintWriter(socket.getOutputStream(), true);
 		
 		messageLabel.setBackground(Color.lightGray);
-		frame.getContentPane().add(messageLabel, BorderLayout.SOUTH);
+		frame.getContentPane().add(messageLabel, BorderLayout.CENTER);
 		
 		JPanel boardPanel = new JPanel();
 		boardPanel.setBackground(Color.black);
-		boardPanel.setLayout(new GridLayout(3, 3, 2, 2));
+		boardPanel.setLayout(new GridLayout(10, 10, 2, 2));
 		
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board.length; j++) {
+		JPanel trackPanel = new JPanel();
+		trackPanel.setBackground(Color.green);
+		trackPanel.setLayout(new GridLayout(10, 10, 2, 2));
+		
+		for (int i = 0; i < primaryboard.length; i++) {
+			for (int j = 0; j < primaryboard.length; j++) {
 				final int k = i;
 				final int l = j;
-				board[i][j] = new Square();
-				board[i][j].addMouseListener(new MouseAdapter() {
+				primaryboard[i][j] = new Square();
+				trackboard[i][j] = new Square();
+				primaryboard[i][j].addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
-	                    currentSquare = board[k][l];
+	                    currentSquare = primaryboard[k][l];
 	                    out.println("MOVE " + k + l);
 	                }
 				});
-				boardPanel.add(board[i][j]);
+				boardPanel.add(primaryboard[i][j]);
+				trackPanel.add(trackboard[i][j]);
 			}
+			frame.getContentPane().add(trackPanel, BorderLayout.CENTER);
 			frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
 		}
 		
@@ -62,6 +70,35 @@ public class Client {
 	public void play() throws Exception {
 		try {
 			String response = in.nextLine();
+			char playerNum = response.charAt(8);
+			char opponentNum = playerNum == '1' ? '2' : '1';
+			frame.setTitle("Battleship: Player " + playerNum);
+			
+			while (in.hasNextLine()) {
+				response = in.nextLine();
+				
+				if (response.startsWith("VALID_MOVE")) {
+					messageLabel.setText("Valid move, please wait");
+					currentSquare.setText('X');
+					currentSquare.repaint();
+				}
+				else if (response.startsWith("OPPONENT_MOVED")) {
+					int xloc = Integer.parseInt(response.substring(15,16));
+					int yloc = Integer.parseInt(response.substring(16,17));
+					trackboard[xloc][yloc].setText('X');
+					trackboard[xloc][yloc].repaint();
+					messageLabel.setText("Opponent moved, your turn");
+				}
+				else if (response.startsWith("MESSAGE")) {
+					messageLabel.setText(response.substring(8));
+				}
+				else if (response.startsWith("OTHER_PLAYER_LEFT")) {
+					JOptionPane.showMessageDialog(frame, "Other player left");
+					break;
+				}
+			}
+			out.println("QUIT");
+			
 		} catch (Exception e) {
 			System.out.println("Cannot start play(): "+ e);
 		}
