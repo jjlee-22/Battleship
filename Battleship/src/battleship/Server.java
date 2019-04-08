@@ -13,8 +13,21 @@ class Server {
 	
 	// Grid board
 	private Player[][] board = new Player[10][10];
+	private Player[][] shipboard = new Player[10][10];
 	
 	Player currentPlayer;
+	
+	public boolean shipHit(int xloc, int yloc) {
+		boolean hit = false;
+		for (int i = 0; i < shipboard.length; i++) {
+			for (int j = 0; j < shipboard.length; j++) {
+				if (shipboard[i][j] == board[i][j]) {
+					hit = true;
+				} else { hit = false; }
+			}
+		}
+		return(hit);
+	}
 	
 	public synchronized void move(int xloc, int yloc, Player player) {
         if (player != currentPlayer) {
@@ -31,6 +44,36 @@ class Server {
 //        }
         board[xloc][yloc] = currentPlayer;
         currentPlayer = currentPlayer.opponent;
+    }
+	
+	public synchronized void add(int xloc, int yloc, int shipNum, Player player) {
+		
+		if (shipNum == 0) {
+			for(int i = 0; i <= 5; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+		else if (shipNum == 1) {
+			for(int i = 0; i <= 4; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+		else if (shipNum == 2) {
+			for(int i = 0; i <= 3; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+		else if (shipNum == 3) {
+			for(int i = 0; i <= 3; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+		else if (shipNum == 4) {
+			for(int i = 0; i <= 3; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+		else if (shipNum == 5) {
+			for(int i = 0; i <= 2; i++)
+				shipboard[xloc+ i][yloc] = player;
+		}
+        
+        
     }
 	
 	class Player implements Runnable {
@@ -51,7 +94,7 @@ class Server {
 				setup();
 				processCommands();
 			} catch (Exception e) {
-				System.out.println("Threading error: " + e);
+				System.out.println("Threading Error: " + e);
 			} finally {
 				if (opponent != null && opponent.output != null) {
 					System.out.println("Player " + opponent.playerNum + " left the game");
@@ -68,7 +111,6 @@ class Server {
 		private void setup() throws IOException {
 			input = new Scanner(socket.getInputStream());
 			output = new PrintWriter(socket.getOutputStream(), true);
-			output.println("WELCOME " + playerNum);
 			
 			if (playerNum == '1') {
 				currentPlayer = this;
@@ -77,7 +119,7 @@ class Server {
 			else {
 				opponent = currentPlayer;
 				opponent.opponent = this;
-				opponent.output.println("MESSAGE Your move");
+				opponent.output.println("MESSAGE Add your ships");
 			}
 			
 		}
@@ -88,9 +130,10 @@ class Server {
                 if (command.startsWith("QUIT")) {
                     return;
                 } 
+                else if (command.startsWith("ADD")) {
+                	processAddCommand(Integer.parseInt(command.substring(4,5)), Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
+                }
                 else if (command.startsWith("MOVE")) {
-                	//System.out.println(Integer.parseInt(command.substring(5,6)));
-                	//System.out.println(Integer.parseInt(command.substring(6,7)));
                     processMoveCommand(Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
                 }
             }
@@ -102,6 +145,11 @@ class Server {
                 output.println("VALID_MOVE");
                 System.out.println("Valid move at coordinates (" + xloc + "," + yloc + ")");
                 opponent.output.println("OPPONENT_MOVED " + xloc + yloc);
+                
+                if (shipHit(xloc, yloc)) {
+                	output.println("You landed a hit! " + xloc + yloc);
+                	opponent.output.println("Your ship has been hit! " + xloc + yloc);
+                }
 //                if (hasWinner()) {
 //                    output.println("VICTORY");
 //                    opponent.output.println("DEFEAT");
@@ -113,6 +161,16 @@ class Server {
                 output.println("MESSAGE " + e.getMessage());
             }
         }
+		
+		private void processAddCommand(int xloc, int yloc, int shipNum) {
+			try {
+				add(xloc, yloc, shipNum, this);
+				output.println("SHIP_ADDED " + xloc + yloc + shipNum);
+				
+			} catch (IllegalStateException e) {
+				output.println("MESSAGE " + e.getMessage());
+			}
+		}
 		
 	}
 }
