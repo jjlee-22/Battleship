@@ -190,7 +190,7 @@ class Server {
 				opponent = currentPlayer;
 				opponent.opponent = this;
 				opponent.output.println("MESSAGE Add your carrier");
-			}
+			} //hello
 			
 		}
 		
