@@ -71,13 +71,13 @@ public class Client {
 				
 				if (response.startsWith("VALID_MOVE")) {
 					messageLabel.setText("Valid move, please wait");
-					currentSquare.setText(playerNum);
+					currentSquare.setText('X');
 					currentSquare.repaint();
 				}
 				else if (response.startsWith("OPPONENT_MOVED")) {
 					int xloc = Integer.parseInt(response.substring(15,16));
 					int yloc = Integer.parseInt(response.substring(16,17));
-					board[xloc][yloc].setText(opponentNum);
+					board[xloc][yloc].setText('X');
 					board[xloc][yloc].repaint();
 					messageLabel.setText("Opponent moved, your turn");
 				}
