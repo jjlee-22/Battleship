@@ -141,6 +141,10 @@ public class Client {
 					trackboard[xloc][yloc].repaint();
 					messageLabel.setText("Opponent moved, your turn");
 				}
+				else if (response.startsWith("HIT")) {
+					currentSquare.hitShip();
+					currentSquare.repaint();
+				}
 				else if (response.startsWith("MESSAGE")) {
 					messageLabel.setText(response.substring(8));
 				}
@@ -173,6 +177,10 @@ public class Client {
 		
 		public void setShip() {
 			setBackground(Color.gray);
+		}
+		
+		public void hitShip() {
+			setBackground(Color.orange);
 		}
 	}
 
