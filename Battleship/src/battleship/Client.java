@@ -39,7 +39,7 @@ public class Client {
 		
 		JPanel boardPanel = new JPanel();
 		boardPanel.setBackground(Color.black);
-		boardPanel.setLayout(new GridLayout(3, 3, 2, 2));
+		boardPanel.setLayout(new GridLayout(10, 10, 1, 1));
 		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board.length; j++) {
@@ -62,6 +62,20 @@ public class Client {
 	public void play() throws Exception {
 		try {
 			String response = in.nextLine();
+			char playerNum = response.charAt(8);
+			char opponentNum = playerNum == '1' ? '2' : '1';
+			frame.setTitle("Battleship: Player " + playerNum);
+			
+			while (in.hasNextLine()) {
+				response = in.nextLine();
+				
+				if (response.startsWith("VALID_MOVE")) {
+					messageLabel.setText("Valid move, please wait");
+					currentSquare.setText(playerNum);
+					currentSquare.repaint();
+				}
+			}
+			
 		} catch (Exception e) {
 			System.out.println("Cannot start play(): "+ e);
 		}
