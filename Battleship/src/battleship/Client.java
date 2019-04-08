@@ -55,12 +55,20 @@ public class Client {
 				trackboard[i][j] = new Square();
 				primaryboard[i][j].addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
-	                    currentSquare = primaryboard[k][l];
-	                    if (shipNum <= 5) {
+						if (shipNum <= 4) {
+							messageLabel.setText("Finish adding your ships");
+						} else {
+							currentSquare = primaryboard[k][l];
+		                    out.println("MOVE " + k + l);
+						}
+	                }
+				});
+				trackboard[i][j].addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent e) {
+	                    currentSquare = trackboard[k][l];
+	                    if (shipNum <= 4) {
 	                    	out.println("ADD " + k + l + shipNum);
 	                    	shipNum++;
-	                    } else {
-	                    	out.println("MOVE " + k + l);
 	                    }
 	                }
 				});
@@ -93,8 +101,38 @@ public class Client {
 					int yloc = Integer.parseInt(response.substring(12,13));
 					int shipNum = Integer.parseInt(response.substring(13,14));
 					messageLabel.setText("Successfully added ship");
-					currentSquare.setShip();
-					currentSquare.repaint();
+					if (shipNum == 0) {
+						for (int i = 0; i <= 4; i++) {
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					else if (shipNum == 1) {
+						for (int i = 0; i <= 3; i++) {
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					else if (shipNum == 2) {
+						for (int i = 0; i <= 2; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					else if (shipNum == 3) {
+						for (int i = 0; i <= 2; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					else if (shipNum == 4) {
+						for (int i = 0; i <= 1; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					//currentSquare.setShip();
+					//currentSquare.repaint();
 				}
 				else if (response.startsWith("OPPONENT_MOVED")) {
 					int xloc = Integer.parseInt(response.substring(15,16));
