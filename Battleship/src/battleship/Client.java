@@ -28,6 +28,7 @@ public class Client {
 	private Socket socket;
 	private Scanner in;
 	private PrintWriter out;
+	public int shipNum = 0;
 	
 	public Client(String serverAddress, int port) throws Exception {
 		
@@ -55,7 +56,12 @@ public class Client {
 				primaryboard[i][j].addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
 	                    currentSquare = primaryboard[k][l];
-	                    out.println("MOVE " + k + l);
+	                    if (shipNum <= 5) {
+	                    	out.println("ADD " + k + l + shipNum);
+	                    	shipNum++;
+	                    } else {
+	                    	out.println("MOVE " + k + l);
+	                    }
 	                }
 				});
 				boardPanel.add(primaryboard[i][j]);
@@ -80,6 +86,14 @@ public class Client {
 				if (response.startsWith("VALID_MOVE")) {
 					messageLabel.setText("Valid move, please wait");
 					currentSquare.setText(playerNum);
+					currentSquare.repaint();
+				}
+				else if (response.startsWith("SHIP_ADDED")) {
+					int xloc = Integer.parseInt(response.substring(11,12));
+					int yloc = Integer.parseInt(response.substring(12,13));
+					int shipNum = Integer.parseInt(response.substring(13,14));
+					messageLabel.setText("Successfully added ship");
+					currentSquare.setShip();
 					currentSquare.repaint();
 				}
 				else if (response.startsWith("OPPONENT_MOVED")) {
@@ -119,7 +133,9 @@ public class Client {
 			label.setText('X' + "");
 		}
 		
-		
+		public void setShip() {
+			setBackground(Color.gray);
+		}
 	}
 
 }
