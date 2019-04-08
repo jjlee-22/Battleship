@@ -68,7 +68,7 @@ public class Client {
 	                    currentSquare = trackboard[k][l];
 	                    if (shipNum <= 4) {
 	                    	out.println("ADD " + k + l + shipNum);
-	                    	shipNum++;
+	                    	
 	                    }
 	                }
 				});
@@ -100,30 +100,33 @@ public class Client {
 					int xloc = Integer.parseInt(response.substring(11,12));
 					int yloc = Integer.parseInt(response.substring(12,13));
 					int shipNum = Integer.parseInt(response.substring(13,14));
-					messageLabel.setText("Successfully added ship");
 					if (shipNum == 0) {
 						for (int i = 0; i <= 4; i++) {
 							trackboard[xloc][yloc+i].setShip();
 							trackboard[xloc][yloc+i].repaint();
 						}
+						messageLabel.setText("Add your battleship");
 					}
 					else if (shipNum == 1) {
 						for (int i = 0; i <= 3; i++) {
 							trackboard[xloc][yloc+i].setShip();
 							trackboard[xloc][yloc+i].repaint();
 						}
+						messageLabel.setText("Add your cruiser");
 					}
 					else if (shipNum == 2) {
 						for (int i = 0; i <= 2; i++){
 							trackboard[xloc][yloc+i].setShip();
 							trackboard[xloc][yloc+i].repaint();
 						}
+						messageLabel.setText("Add your submarine");
 					}
 					else if (shipNum == 3) {
 						for (int i = 0; i <= 2; i++){
 							trackboard[xloc][yloc+i].setShip();
 							trackboard[xloc][yloc+i].repaint();
 						}
+						messageLabel.setText("Add your destroyer");
 					}
 					else if (shipNum == 4) {
 						for (int i = 0; i <= 1; i++){
@@ -131,6 +134,7 @@ public class Client {
 							trackboard[xloc][yloc+i].repaint();
 						}
 					}
+					this.shipNum++;
 					//currentSquare.setShip();
 					//currentSquare.repaint();
 				}
@@ -142,8 +146,12 @@ public class Client {
 					messageLabel.setText("Opponent moved, your turn");
 				}
 				else if (response.startsWith("HIT")) {
+					messageLabel.setText("You scored a hit!");
 					currentSquare.hitShip();
 					currentSquare.repaint();
+				}
+				else if (response.startsWith("OPPONENT_HIT")) {
+					messageLabel.setText("One of your ships been hit!");
 				}
 				else if (response.startsWith("MESSAGE")) {
 					messageLabel.setText(response.substring(8));
