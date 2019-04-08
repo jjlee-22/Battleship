@@ -79,13 +79,13 @@ public class Client {
 				
 				if (response.startsWith("VALID_MOVE")) {
 					messageLabel.setText("Valid move, please wait");
-					currentSquare.setText('X');
+					currentSquare.setText(playerNum);
 					currentSquare.repaint();
 				}
 				else if (response.startsWith("OPPONENT_MOVED")) {
 					int xloc = Integer.parseInt(response.substring(15,16));
 					int yloc = Integer.parseInt(response.substring(16,17));
-					trackboard[xloc][yloc].setText('X');
+					trackboard[xloc][yloc].setText(opponentNum);
 					trackboard[xloc][yloc].repaint();
 					messageLabel.setText("Opponent moved, your turn");
 				}
@@ -93,7 +93,7 @@ public class Client {
 					messageLabel.setText(response.substring(8));
 				}
 				else if (response.startsWith("OTHER_PLAYER_LEFT")) {
-					JOptionPane.showMessageDialog(frame, "Other player left");
+					JOptionPane.showMessageDialog(frame, "Other player left the game");
 					break;
 				}
 			}
@@ -116,7 +116,7 @@ public class Client {
 		
 		public void setText(char text) {
 			label.setForeground(text == '1' ? Color.BLUE : Color.RED);
-			label.setText(text + "");
+			label.setText('X' + "");
 		}
 		
 		
