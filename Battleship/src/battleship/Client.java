@@ -74,7 +74,22 @@ public class Client {
 					currentSquare.setText(playerNum);
 					currentSquare.repaint();
 				}
+				else if (response.startsWith("OPPONENT_MOVED")) {
+					int xloc = Integer.parseInt(response.substring(15,16));
+					int yloc = Integer.parseInt(response.substring(16,17));
+					board[xloc][yloc].setText(opponentNum);
+					board[xloc][yloc].repaint();
+					messageLabel.setText("Opponent moved, your turn");
+				}
+				else if (response.startsWith("MESSAGE")) {
+					messageLabel.setText(response.substring(8));
+				}
+				else if (response.startsWith("OTHER_PLAYER_LEFT")) {
+					JOptionPane.showMessageDialog(frame, "Other player left");
+					break;
+				}
 			}
+			out.println("QUIT");
 			
 		} catch (Exception e) {
 			System.out.println("Cannot start play(): "+ e);
