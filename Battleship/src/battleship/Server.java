@@ -18,12 +18,15 @@ class Server {
 	
 	public synchronized void move(int xloc, int yloc, Player player) {
         if (player != currentPlayer) {
+        	System.out.println("Not your turn");
             throw new IllegalStateException("Not your turn");
         } 
         else if (player.opponent == null) {
+        	System.out.println("You don't have an opponent yet");
             throw new IllegalStateException("You don't have an opponent yet");
         } 
         else if (board[xloc][yloc] != null) {
+        	System.out.println("Cell already occupied");
             throw new IllegalStateException("Cell already occupied");
         }
         board[xloc][yloc] = currentPlayer;
@@ -50,13 +53,21 @@ class Server {
 			} catch (Exception e) {
 				System.out.println("Threading error: " + e);
 			} finally {
-				//socket.close();
+				if (opponent != null && opponent.output != null) {
+					opponent.output.println("OTHER_PLAYER_LEFT");
+				}
+				try {
+					socket.close();
+				} catch (IOException e) {
+					
+				}
 			}
 		}
 		
 		private void setup() throws IOException {
 			input = new Scanner(socket.getInputStream());
 			output = new PrintWriter(socket.getOutputStream(), true);
+			output.println("WELCOME " + playerNum);
 			
 			if (playerNum == '1') {
 				currentPlayer = this;
@@ -86,6 +97,7 @@ class Server {
             try {
                 move(xloc, yloc, this);
                 output.println("VALID_MOVE");
+                System.out.println("Valid move");
                 opponent.output.println("OPPONENT_MOVED " + xloc + yloc);
 //                if (hasWinner()) {
 //                    output.println("VICTORY");
