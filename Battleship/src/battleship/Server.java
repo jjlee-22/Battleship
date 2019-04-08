@@ -18,7 +18,7 @@ class Server {
 	
 	public synchronized void move(int xloc, int yloc, Player player) {
         if (player != currentPlayer) {
-        	System.out.println("Not your turn");
+        	System.out.println("Not Player " + player + "'s turn");
             throw new IllegalStateException("Not your turn");
         } 
         else if (player.opponent == null) {
@@ -54,6 +54,7 @@ class Server {
 				System.out.println("Threading error: " + e);
 			} finally {
 				if (opponent != null && opponent.output != null) {
+					System.out.println("OTHER_PLAYER_LEFT");
 					opponent.output.println("OTHER_PLAYER_LEFT");
 				}
 				try {
@@ -88,7 +89,9 @@ class Server {
                     return;
                 } 
                 else if (command.startsWith("MOVE")) {
-                    processMoveCommand(Integer.parseInt(command.substring(5)), Integer.parseInt(command.substring(6)));
+                	System.out.println(Integer.parseInt(command.substring(5,6)));
+                	System.out.println(Integer.parseInt(command.substring(6,7)));
+                    processMoveCommand(Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
                 }
             }
         }
