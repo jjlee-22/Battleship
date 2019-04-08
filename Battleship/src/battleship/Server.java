@@ -25,10 +25,10 @@ class Server {
         	System.out.println("Player " + player.playerNum + " doesn't have an opponent yet");
             throw new IllegalStateException("You don't have an opponent yet");
         } 
-        else if (board[xloc][yloc] != null) {
-        	System.out.println("Cell already occupied");
-            throw new IllegalStateException("Cell already occupied");
-        }
+//        else if (board[xloc][yloc] != null) {
+//        	System.out.println("Cell already occupied");
+//            throw new IllegalStateException("Cell already occupied");
+//        }
         board[xloc][yloc] = currentPlayer;
         currentPlayer = currentPlayer.opponent;
     }
