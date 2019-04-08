@@ -28,6 +28,7 @@ public class Client {
 	private Socket socket;
 	private Scanner in;
 	private PrintWriter out;
+	public int shipNum = 0;
 	
 	public Client(String serverAddress, int port) throws Exception {
 		
@@ -54,8 +55,21 @@ public class Client {
 				trackboard[i][j] = new Square();
 				primaryboard[i][j].addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
-	                    currentSquare = primaryboard[k][l];
-	                    out.println("MOVE " + k + l);
+						if (shipNum <= 4) {
+							messageLabel.setText("Finish adding your ships");
+						} else {
+							currentSquare = primaryboard[k][l];
+		                    out.println("MOVE " + k + l);
+						}
+	                }
+				});
+				trackboard[i][j].addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent e) {
+	                    currentSquare = trackboard[k][l];
+	                    if (shipNum <= 4) {
+	                    	out.println("ADD " + k + l + shipNum);
+	                    	
+	                    }
 	                }
 				});
 				boardPanel.add(primaryboard[i][j]);
@@ -82,12 +96,62 @@ public class Client {
 					currentSquare.setText(playerNum);
 					currentSquare.repaint();
 				}
+				else if (response.startsWith("SHIP_ADDED")) {
+					int xloc = Integer.parseInt(response.substring(11,12));
+					int yloc = Integer.parseInt(response.substring(12,13));
+					int shipNum = Integer.parseInt(response.substring(13,14));
+					if (shipNum == 0) {
+						for (int i = 0; i <= 4; i++) {
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+						messageLabel.setText("Add your battleship");
+					}
+					else if (shipNum == 1) {
+						for (int i = 0; i <= 3; i++) {
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+						messageLabel.setText("Add your cruiser");
+					}
+					else if (shipNum == 2) {
+						for (int i = 0; i <= 2; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+						messageLabel.setText("Add your submarine");
+					}
+					else if (shipNum == 3) {
+						for (int i = 0; i <= 2; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+						messageLabel.setText("Add your destroyer");
+					}
+					else if (shipNum == 4) {
+						for (int i = 0; i <= 1; i++){
+							trackboard[xloc][yloc+i].setShip();
+							trackboard[xloc][yloc+i].repaint();
+						}
+					}
+					this.shipNum++;
+					//currentSquare.setShip();
+					//currentSquare.repaint();
+				}
 				else if (response.startsWith("OPPONENT_MOVED")) {
 					int xloc = Integer.parseInt(response.substring(15,16));
 					int yloc = Integer.parseInt(response.substring(16,17));
 					trackboard[xloc][yloc].setText(opponentNum);
 					trackboard[xloc][yloc].repaint();
 					messageLabel.setText("Opponent moved, your turn");
+				}
+				else if (response.startsWith("HIT")) {
+					messageLabel.setText("You scored a hit!");
+					currentSquare.hitShip();
+					currentSquare.repaint();
+				}
+				else if (response.startsWith("OPPONENT_HIT")) {
+					messageLabel.setText("One of your ships been hit!");
 				}
 				else if (response.startsWith("MESSAGE")) {
 					messageLabel.setText(response.substring(8));
@@ -119,7 +183,13 @@ public class Client {
 			label.setText('X' + "");
 		}
 		
+		public void setShip() {
+			setBackground(Color.gray);
+		}
 		
+		public void hitShip() {
+			setBackground(Color.orange);
+		}
 	}
 
 }
