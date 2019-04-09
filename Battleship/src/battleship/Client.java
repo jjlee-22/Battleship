@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 public class Client {
 	
 	public JFrame frame = new JFrame("Battleships");
-	private JLabel messageLabel = new JLabel("...");
+	private JLabel messageLabel = new JLabel("Add your carrier");
 	
 	private Square[][] primaryboard = new Square[10][10];
 	private Square[][] trackboard = new Square[10][10];
@@ -92,7 +92,7 @@ public class Client {
 				response = in.nextLine();
 				
 				if (response.startsWith("VALID_MOVE")) {
-					messageLabel.setText("Attacking, waiting for opponent");
+					messageLabel.setText("Missed! Waiting for opponent...");
 					currentSquare.setText(playerNum);
 					currentSquare.repaint();
 				}
@@ -143,21 +143,29 @@ public class Client {
 					int yloc = Integer.parseInt(response.substring(16,17));
 					trackboard[xloc][yloc].setText(opponentNum);
 					trackboard[xloc][yloc].repaint();
-					messageLabel.setText("Opponent moved, your turn");
+					messageLabel.setText("Opponent attacked, your turn...");
 				}
 				else if (response.startsWith("HIT")) {
-					messageLabel.setText("You scored a hit!");
+					messageLabel.setText("You scored a hit! Waiting for opponent...");
 					currentSquare.hitShip();
 					currentSquare.repaint();
 				}
 				else if (response.startsWith("OPPONENT_HIT")) {
-					messageLabel.setText("One of your ships been hit!");
+					messageLabel.setText("One of your ships been hit! Your turn to attack...");
+				}
+				else if (response.startsWith("VICTORY")) {
+					JOptionPane.showMessageDialog(frame, "Winner, Winner Chicken Dinner!");
+                    break;
+				}
+				else if (response.startsWith("DEFEAT")) {
+					JOptionPane.showMessageDialog(frame, "You got owned");
+                    break;
 				}
 				else if (response.startsWith("MESSAGE")) {
 					messageLabel.setText(response.substring(8));
 				}
 				else if (response.startsWith("OTHER_PLAYER_LEFT")) {
-					JOptionPane.showMessageDialog(frame, "Other player left the game");
+					JOptionPane.showMessageDialog(frame, "Other player rage quitted");
 					break;
 				}
 			}

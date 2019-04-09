@@ -12,28 +12,36 @@ import java.util.concurrent.Executors;
 class Server {
 	
 	// Grid board
-	private Player[][] board = new Player[10][10];
-	private Player[][] shipboard = new Player[10][10];
+	private Player[][] p1board = new Player[10][10];
+	private Player[][] p2board = new Player[10][10];
 	
 	Player currentPlayer;
+	public int p1Life = 1700;
+	public int p2Life = 1700;
+	
+	public boolean winnerChickenDinner() {
+		return (p1Life <= 0 || p2Life <= 0);
+	}
 	
 	public boolean shipHit(int xloc, int yloc, Player player) {
 		boolean hit = false;
 		
 		if (player.playerNum == '2') {
-			for (int i = 0; i < shipboard.length; i++) {
-				for (int j = 0; j < shipboard.length; j++) {
-					if (shipboard[xloc][yloc] != null) {
+			for (int i = 0; i < p1board.length; i++) {
+				for (int j = 0; j < p1board.length; j++) {
+					if (p1board[xloc][yloc] != null) {
 						hit = true;
+						p1Life--;
 					} else { hit = false; }
 				}
 			}
 		}
 		else if (player.playerNum == '1') {
-			for (int i = 0; i < board.length; i++) {
-				for (int j = 0; j < board.length; j++) {
-					if (board[xloc][yloc] != null) {
+			for (int i = 0; i < p2board.length; i++) {
+				for (int j = 0; j < p2board.length; j++) {
+					if (p2board[xloc][yloc] != null) {
 						hit = true;
+						p2Life--;
 					} else { hit = false; }
 				}
 			}
@@ -47,9 +55,9 @@ class Server {
         	System.out.println("Not Player " + player.playerNum + "'s turn");
             throw new IllegalStateException("Not your turn");
         } 
-//        else if (player.opponent == null) {
-//        	System.out.println("Player " + player.playerNum + " doesn't have an opponent yet");
-//            throw new IllegalStateException("You don't have an opponent yet");
+//        else if (p1board[xloc][yloc] != currentPlayer) {
+//        	System.out.println("Player " + player.playerNum + " has already destroyed this square");
+//            throw new IllegalStateException("Already attacked this square");
 //        } 
 //        else if (board[xloc][yloc] != null) {
 //        	System.out.println("Cell already occupied");
@@ -67,79 +75,80 @@ class Server {
 		else if (player.playerNum == '1') {
 				if (shipNum == 0) {
 					for(int i = 0; i <= 4; i++) {
-						if (shipboard[xloc][yloc+i] != null)
-							throw new IllegalStateException("Ship already exist in here");
-						shipboard[xloc][yloc+ i] = currentPlayer;
+						if ((p1board[xloc][yloc+i] != null) || (yloc > 5))
+							throw new IllegalStateException("Ship already exist in here or out of bounds");
+						p1board[xloc][yloc+ i] = currentPlayer;
 						
 					}
 				}
 				else if (shipNum == 1) {
 					for(int i = 0; i <= 3; i++) {
-						if (shipboard[xloc][yloc+i] != null)
-							throw new IllegalStateException("Ship already exist in here");
-						shipboard[xloc][yloc+ i] = currentPlayer;
+						if (p1board[xloc][yloc+i] != null || (yloc > 6))
+							throw new IllegalStateException("Ship already exist in here or out of bounds");
+						p1board[xloc][yloc+ i] = currentPlayer;
 					}
 				}
 				else if (shipNum == 2) {
 					for(int i = 0; i <= 2; i++) {
-						if (shipboard[xloc][yloc+i] != null)
-							throw new IllegalStateException("Ship already exist in here");
-						shipboard[xloc][yloc+ i] = currentPlayer;
+						if (p1board[xloc][yloc+i] != null || (yloc > 7))
+							throw new IllegalStateException("Ship already exist in here or out of bounds");
+						p1board[xloc][yloc+ i] = currentPlayer;
 					}
 				}
 				else if (shipNum == 3) {
 					for(int i = 0; i <= 2; i++) {
-						if (shipboard[xloc][yloc+i] != null)
-							throw new IllegalStateException("Ship already exist in here");
-						shipboard[xloc][yloc+ i] = currentPlayer;
+						if (p1board[xloc][yloc+i] != null || (yloc > 7))
+							throw new IllegalStateException("Ship already exist in here or out of bounds");
+						p1board[xloc][yloc+ i] = currentPlayer;
 					}
 				}
 				else if (shipNum == 4) {
 					for(int i = 0; i <= 1; i++) {
-						if (shipboard[xloc][yloc+i] != null)
-							throw new IllegalStateException("Ship already exist in here");
-						shipboard[xloc][yloc+ i] = currentPlayer;
+						if (p1board[xloc][yloc+i] != null || (yloc > 8))
+							throw new IllegalStateException("Ship already exist in here or out of bounds");
+						p1board[xloc][yloc+ i] = currentPlayer;
 					}
-					player.output.println("MESSAGE Your Move");
+					player.output.println("MESSAGE Waiting for other player to finish placement");
 				}
 		}
 		else if (player.playerNum == '2') {
 			if (shipNum == 0) {
 				for(int i = 0; i <= 4; i++) {
-					if (board[xloc][yloc+i] != null)
-						throw new IllegalStateException("Ship already exist in here");
-					board[xloc][yloc+ i] = currentPlayer;
+					if (p2board[xloc][yloc+i] != null || (yloc > 5))
+						throw new IllegalStateException("Ship already exist in here or out of bounds");
+					p2board[xloc][yloc+ i] = currentPlayer;
 					
 				}
 			}
 			else if (shipNum == 1) {
 				for(int i = 0; i <= 3; i++) {
-					if (board[xloc][yloc+i] != null)
-						throw new IllegalStateException("Ship already exist in here");
-					board[xloc][yloc+ i] = currentPlayer;
+					if (p2board[xloc][yloc+i] != null|| (yloc > 6))
+						throw new IllegalStateException("Ship already exist in here or out of bounds");
+					p2board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 2) {
 				for(int i = 0; i <= 2; i++) {
-					if (board[xloc][yloc+i] != null)
-						throw new IllegalStateException("Ship already exist in here");
-					board[xloc][yloc+ i] = currentPlayer;
+					if (p2board[xloc][yloc+i] != null || (yloc > 7))
+						throw new IllegalStateException("Ship already exist in here or out of bounds");
+					p2board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 3) {
 				for(int i = 0; i <= 2; i++) {
-					if (board[xloc][yloc+i] != null)
-						throw new IllegalStateException("Ship already exist in here");
-					board[xloc][yloc+ i] = currentPlayer;
+					if (p2board[xloc][yloc+i] != null || (yloc > 7))
+						throw new IllegalStateException("Ship already exist in here or out of bounds");
+					p2board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 4) {
 				for(int i = 0; i <= 1; i++) {
-					if (board[xloc][yloc+i] != null)
-						throw new IllegalStateException("Ship already exist in here");
-					board[xloc][yloc+ i] = currentPlayer;
+					if (p2board[xloc][yloc+i] != null || (yloc > 8))
+						throw new IllegalStateException("Ship already exist in here or out of bounds");
+					p2board[xloc][yloc+ i] = currentPlayer;
 				}
 				player.output.println("MESSAGE Waiting for other player to finish placement");
+				player.opponent.output.println("MESSAGE Opponent finished placement, attack when ready!");
 			}
 		}
         
@@ -190,7 +199,7 @@ class Server {
 				opponent = currentPlayer;
 				opponent.opponent = this;
 				opponent.output.println("MESSAGE Add your carrier");
-			} //hello
+			}
 			
 		}
 		
@@ -212,6 +221,7 @@ class Server {
 		private void processMoveCommand(int xloc, int yloc) {
             try {
                 move(xloc, yloc, this);
+                System.out.println("P1 Health: " + p1Life + " P2 Health: " + p2Life);
                 output.println("VALID_MOVE");
                 System.out.println("Valid move at coordinates (" + xloc + "," + yloc + ")");
                 opponent.output.println("OPPONENT_MOVED " + xloc + yloc);
@@ -221,9 +231,10 @@ class Server {
                 	output.println("HIT " + xloc + yloc);
                 	opponent.output.println("OPPONENT_HIT " + xloc + yloc);
                 }
-//                if (hasWinner()) {
-//                    output.println("VICTORY");
-//                    opponent.output.println("DEFEAT");
+                if (winnerChickenDinner()) {
+                    output.println("VICTORY");
+                    opponent.output.println("DEFEAT");
+                }
             } catch (IllegalStateException e) {
                 output.println("MESSAGE " + e.getMessage());
             }
