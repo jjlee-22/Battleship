@@ -106,38 +106,38 @@ class Server {
 		else if (player.playerNum == '2') {
 			if (shipNum == 0) {
 				for(int i = 0; i <= 4; i++) {
-					if (shipboard[xloc][yloc+i] != null)
+					if (board[xloc][yloc+i] != null)
 						throw new IllegalStateException("Ship already exist in here");
-					shipboard[xloc][yloc+ i] = currentPlayer;
+					board[xloc][yloc+ i] = currentPlayer;
 					
 				}
 			}
 			else if (shipNum == 1) {
 				for(int i = 0; i <= 3; i++) {
-					if (shipboard[xloc][yloc+i] != null)
+					if (board[xloc][yloc+i] != null)
 						throw new IllegalStateException("Ship already exist in here");
-					shipboard[xloc][yloc+ i] = currentPlayer;
+					board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 2) {
 				for(int i = 0; i <= 2; i++) {
-					if (shipboard[xloc][yloc+i] != null)
+					if (board[xloc][yloc+i] != null)
 						throw new IllegalStateException("Ship already exist in here");
-					shipboard[xloc][yloc+ i] = currentPlayer;
+					board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 3) {
 				for(int i = 0; i <= 2; i++) {
-					if (shipboard[xloc][yloc+i] != null)
+					if (board[xloc][yloc+i] != null)
 						throw new IllegalStateException("Ship already exist in here");
-					shipboard[xloc][yloc+ i] = currentPlayer;
+					board[xloc][yloc+ i] = currentPlayer;
 				}
 			}
 			else if (shipNum == 4) {
 				for(int i = 0; i <= 1; i++) {
-					if (shipboard[xloc][yloc+i] != null)
+					if (board[xloc][yloc+i] != null)
 						throw new IllegalStateException("Ship already exist in here");
-					shipboard[xloc][yloc+ i] = currentPlayer;
+					board[xloc][yloc+ i] = currentPlayer;
 				}
 				player.output.println("MESSAGE Waiting for other player to finish placement");
 			}
