@@ -92,7 +92,7 @@ public class Client {
 				response = in.nextLine();
 				
 				if (response.startsWith("VALID_MOVE")) {
-					messageLabel.setText("Valid move, please wait");
+					messageLabel.setText("Attacking, waiting for opponent");
 					currentSquare.setText(playerNum);
 					currentSquare.repaint();
 				}
