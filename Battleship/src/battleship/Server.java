@@ -1,3 +1,10 @@
+/*
+ * Server.java
+ * @author - Jonathan Lee
+ * @date - April 4th, 2019
+ * 
+ */
+
 package battleship;
 
 import java.io.IOException;
@@ -11,21 +18,35 @@ import java.util.concurrent.Executors;
 
 class Server {
 	
-	// Grid board
+	// Double arrays to for the server to keep track of shots and ships for each board
 	private Player[][] p1board = new Player[10][10];
 	private Player[][] p2board = new Player[10][10];
 	
+	// Currently selected player and player 1/2 ship health
 	Player currentPlayer;
 	public int p1Life = 1700;
 	public int p2Life = 1700;
 	
+	/**
+	 * Condition for when either player 1 or player 2 health drop to 0 or below 0
+	 * @return boolean
+	 */
 	public boolean winnerChickenDinner() {
 		return (p1Life <= 0 || p2Life <= 0);
 	}
 	
+	/**
+	 * Condition for when the selected coordinates contain a ship or not
+	 * If yes, register as hit. Else, no hit.
+	 * @param xloc
+	 * @param yloc
+	 * @param player
+	 * @return boolean
+	 */
 	public boolean shipHit(int xloc, int yloc, Player player) {
 		boolean hit = false;
 		
+		// Searches the entire grid to see if it hit or not
 		if (player.playerNum == '2') {
 			for (int i = 0; i < p1board.length; i++) {
 				for (int j = 0; j < p1board.length; j++) {
@@ -49,24 +70,30 @@ class Server {
 		return(hit);
 	}
 	
-	
+	/**
+	 * Checks if the current player's turn or not
+	 * If not, throws an exception message that get send to the violator
+	 * @param xloc
+	 * @param yloc
+	 * @param player
+	 */
 	public synchronized void move(int xloc, int yloc, Player player) {
         if (player != currentPlayer) {
         	System.out.println("Not Player " + player.playerNum + "'s turn");
             throw new IllegalStateException("Not your turn");
         } 
-//        else if (p1board[xloc][yloc] != currentPlayer) {
-//        	System.out.println("Player " + player.playerNum + " has already destroyed this square");
-//            throw new IllegalStateException("Already attacked this square");
-//        } 
-//        else if (board[xloc][yloc] != null) {
-//        	System.out.println("Cell already occupied");
-//            throw new IllegalStateException("Cell already occupied");
-//        }
-        //board[xloc][yloc] = currentPlayer;
-        currentPlayer = currentPlayer.opponent;
+        currentPlayer = currentPlayer.opponent; // Player take turns
     }
 	
+	/**
+	 * Add method that waits for each client to send the added ship's location and type
+	 * Absolute abysmal coding here. Could be written much, much better.
+	 * Not even going to document this due to really bad coding practice
+	 * @param xloc
+	 * @param yloc
+	 * @param shipNum
+	 * @param player
+	 */
 	public synchronized void add(int xloc, int yloc, int shipNum, Player player) {
 		if (player.opponent == null) {
         	System.out.println("Player " + player.playerNum + " doesn't have an opponent yet");
@@ -154,7 +181,12 @@ class Server {
         
     }
 	
+	/*
+	 * Another class that I didn't bother to put into another .java
+	 * Create networking with clients. Ability send or receive commands between server and client
+	 */
 	class Player implements Runnable {
+		// Attributes for networking
 		char playerNum;
 		Player opponent;
 		Socket socket;
@@ -169,11 +201,12 @@ class Server {
 		@Override
 		public void run() {
 			try {
-				setup();
-				processCommands();
+				setup();	// Initializes sockets and connection with client
+				processCommands();	// Processes commands between client and server
 			} catch (Exception e) {
 				System.out.println("Threading Error: " + e);
 			} finally {
+				// Ending connection when one player disconnects
 				if (opponent != null && opponent.output != null) {
 					System.out.println("Player " + opponent.playerNum + " left the game");
 					opponent.output.println("OTHER_PLAYER_LEFT");
@@ -186,6 +219,10 @@ class Server {
 			}
 		}
 		
+		/**
+		 * Initializes sockets and connection with client
+		 * @throws IOException
+		 */
 		private void setup() throws IOException {
 			input = new Scanner(socket.getInputStream());
 			output = new PrintWriter(socket.getOutputStream(), true);
@@ -203,6 +240,9 @@ class Server {
 			
 		}
 		
+		/**
+		 * Processes commands between client and server
+		 */
 		private void processCommands() {
             while (input.hasNextLine()) {
                 String command = input.nextLine();
@@ -218,6 +258,11 @@ class Server {
             }
         }
 		
+		/**
+		 * Processes move commands and determines if registered as missed, hit, victory, or defeat
+		 * @param xloc
+		 * @param yloc
+		 */
 		private void processMoveCommand(int xloc, int yloc) {
             try {
                 move(xloc, yloc, this);
@@ -240,6 +285,12 @@ class Server {
             }
         }
 		
+		/**
+		 * Processes add commands and gives client a thumbs up if the add is valid
+		 * @param xloc
+		 * @param yloc
+		 * @param shipNum
+		 */
 		private void processAddCommand(int xloc, int yloc, int shipNum) {
 			try {
 				add(xloc, yloc, shipNum, this);
