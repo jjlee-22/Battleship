@@ -1,4 +1,4 @@
-# Battleship - Mulitplayer
+# Battleship
 #### A classic battleship guessing game that supports multiplayer over a network
 
 ### Rules:
