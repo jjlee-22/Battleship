@@ -27,9 +27,9 @@ public class DriverServer {
 			// Generates thread for each client
 			while(true) {
 				Server server = new Server();
-				pool.execute(server.new Player(listener.accept(), '1'));
+				pool.execute(new Player(listener.accept(), '1'));
 				System.out.println("Client Found!");
-				pool.execute(server.new Player(listener.accept(), '2'));
+				pool.execute(new Player(listener.accept(), '2'));
 				System.out.println("Client Found!");
 			}
 		}

@@ -7,10 +7,8 @@
 
 package battleship;
 
-import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,9 +28,9 @@ public class Client {
 	private JLabel messageLabel = new JLabel("Add your carrier");
 	
 	// Create double arrays to keep track of primary and tracking boards
-	private Square[][] primaryboard = new Square[10][10];
-	private Square[][] trackboard = new Square[10][10];
-	private Square currentSquare;
+	private static Square[][] primaryboard = new Square[10][10];
+	private static Square[][] trackboard = new Square[10][10];
+	private static Square currentSquare;
 	
 	// Attributes for networking; Sending stuff in and out between client and server
 	private Socket socket;
@@ -220,32 +218,6 @@ public class Client {
 		}
 	}
 	
-	/**
-	 * Square class that I was too lazy to create a new .java to put in
-	 * Please forgive me
-	 */
-	static class Square extends JPanel {
-		JLabel label = new JLabel();
-		
-		public Square() {
-			setBackground(Color.white);
-			setLayout(new GridBagLayout());
-			label.setFont(new Font("Arial", Font.BOLD, 40));
-			add(label);
-		}
-		
-		public void setText(char text) {
-			label.setForeground(text == '1' ? Color.BLUE : Color.RED);
-			label.setText('X' + "");
-		}
-		
-		public void setShip() {
-			setBackground(Color.gray);
-		}
-		
-		public void hitShip() {
-			setBackground(Color.orange);
-		}
-	}
+
 
 }
