@@ -1,4 +1,6 @@
 # Battleship
 #### A classic battleship guessing game that supports multiplayer over a network
 
-Run both DriverServer.java and DriverClient.java to begin playing!
+### Rules:
++ Each contains only two players
++ Players must take turns
