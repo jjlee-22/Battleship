@@ -8,6 +8,7 @@
 package battleship;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -232,8 +233,11 @@ class Server {
 		loginInfo.put(username, password);
 		Properties properties = new Properties();
 		try {
-			properties.load(new FileInputStream("data.properties"));
-			properties.putAll(loginInfo);
+			for (Map.Entry<String,String> entry : loginInfo.entrySet()) {
+			    properties.put(entry.getKey(), entry.getValue());
+			}
+
+			properties.store(new FileOutputStream("data.properties"), null);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
