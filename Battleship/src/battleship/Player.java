@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.HashMap;
 
 
 /*
@@ -18,6 +21,9 @@ class Player implements Runnable {
 	Socket socket;
 	Scanner input;
 	PrintWriter output;
+	private String pattern = "(.*)-(.*)";	// Pattern for regex to identify username and password
+	private String username;
+	private String password;
 	
 	public Player(Socket socket, char playerNum) {
 		this.socket = socket;
@@ -72,11 +78,18 @@ class Player implements Runnable {
 	private void processCommands() {
         while (input.hasNextLine()) {
             String command = input.nextLine();
+            System.out.println(command);
             if (command.startsWith("QUIT")) {
                 return;
             } 
             else if (command.startsWith("ADD")) {
             	processAddCommand(Integer.parseInt(command.substring(4,5)), Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
+            }
+            else if (command.startsWith("LOGIN")) {
+            	processLoginCommand(command.substring(6));
+            }
+            else if (command.startsWith("REGISTER")) {
+            	processRegisterCommand(command.substring(9));
             }
             else if (command.startsWith("MOVE")) {
                 processMoveCommand(Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
@@ -125,6 +138,68 @@ class Player implements Runnable {
 		} catch (IllegalStateException e) {
 			output.println("MESSAGE " + e.getMessage());
 		} 
+	}
+	
+	/**
+	 * Processes login commands and tells client if the user is authenticated
+	 * @param login
+	 * 
+	 */
+	private void processLoginCommand(String login) {
+		try {
+			Pattern r = Pattern.compile(pattern);
+			Matcher m = r.matcher(login);
+			
+			if (m.find()) {
+				username = m.group(1);
+				password = m.group(2);
+			}
+			
+			if (Server.login(username, password, this)) {
+				output.println("AUTH_TRUE");
+			}
+			else {
+				output.println("AUTH_FALSE");
+			}
+				
+			
+			//System.out.println(loginInfo);
+			
+		} catch (IllegalStateException e) {
+			output.println("MESSAGE " + e.getMessage());
+		}
+		
+	}
+	
+	/**
+	 * Processes login commands and tells client if the user is authenticated
+	 * @param login
+	 * 
+	 */
+	private void processRegisterCommand(String login) {
+		try {
+			Pattern r = Pattern.compile(pattern);
+			Matcher m = r.matcher(login);
+			
+			if (m.find()) {
+				username = m.group(1);
+				password = m.group(2);
+			}
+			
+			if (Server.register(username, password, this)) {
+				output.println("REG_TRUE");
+			}
+			else {
+				output.println("REG_FALSE");
+			}
+				
+			
+			//System.out.println(loginInfo);
+			
+		} catch (IllegalStateException e) {
+			output.println("MESSAGE " + e.getMessage());
+		}
+		
 	}
 	
 }

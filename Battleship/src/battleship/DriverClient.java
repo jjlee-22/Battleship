@@ -20,8 +20,9 @@ public class DriverClient {
 		client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setSize(800, 800);
         client.frame.setLayout(new GridLayout(2, 2));	// JFrame GridLayout of 2 columns and 2 rows
-        client.frame.setVisible(true);
+        client.frame.setVisible(false);
         client.frame.setResizable(false);	// Disabled the ability to resize cause it makes the squares look weird
+        
         client.play();	// Starts the client game
 	}
 

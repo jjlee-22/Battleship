@@ -7,6 +7,12 @@
 
 package battleship;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 class Server {
 	
 	// Double arrays to for the server to keep track of shots and ships for each board
@@ -17,6 +23,9 @@ class Server {
 	static Player currentPlayer;
 	public static int p1Life = 1700;
 	public static int p2Life = 1700;
+	
+	// Hashmap to store login credentials
+	private static HashMap<String, String> loginInfo = new HashMap<>();	
 	
 	/**
 	 * Condition for when either player 1 or player 2 health drop to 0 or below 0
@@ -171,4 +180,65 @@ class Server {
 		}
         
     }
+	
+	/**
+	 * Add method that authenticate user login credentials
+	 * @param username
+	 * @param password
+	 * @param player
+	 * @return boolean
+	 */
+	public synchronized static boolean login(String username, String password, Player player) {	
+		
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream("data.properties"));
+			for (final String name: properties.stringPropertyNames())
+			    loginInfo.put(name, properties.getProperty(name));
+			//loginInfo = new HashMap<String, String>{properties};
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		
+		for (Map.Entry<String, String> entry : loginInfo.entrySet()) {
+			if (username.equals(entry.getKey())) {
+				if (password.equals(entry.getValue())) {
+					System.out.println("Login Matched!");
+					System.out.println(loginInfo);
+					return(true);
+				}
+			}
+		}
+
+		System.out.println(loginInfo);
+		return(false);
+	}
+	
+	/**
+	 * Add method that registers user login credentials into a hashmap
+	 * @param username
+	 * @param password
+	 * @param player
+	 * @return boolean
+	 */
+	public synchronized static boolean register(String username, String password, Player player) {
+		for (Map.Entry<String, String> entry : loginInfo.entrySet()) {
+			if (username.equals(entry.getKey())) {
+				return(false);
+			}
+		}
+
+		loginInfo.put(username, password);
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream("data.properties"));
+			properties.putAll(loginInfo);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+		System.out.println(loginInfo);
+		return(true);
+	}
 }
