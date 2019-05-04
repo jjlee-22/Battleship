@@ -8,6 +8,9 @@
 package battleship;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -22,6 +25,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.text.StyledDocument;
+import javax.swing.JButton;
 
 public class Client {
 	
@@ -29,7 +38,9 @@ public class Client {
 	public JFrame frame = new JFrame("Battleships");
 	private JLabel messageLabel = new JLabel("Add your carrier");
 	ClientLogin clientLogin = new ClientLogin();
-	
+	JTextPane chatboxField = new JTextPane();
+	JTextField chatTextField = new JTextField(20);
+	StyledDocument doc = chatboxField.getStyledDocument();
 	
 	// Create double arrays to keep track of primary and tracking boards
 	private static Square[][] primaryboard = new Square[10][10];
@@ -41,8 +52,6 @@ public class Client {
 	private Scanner in;
 	private PrintWriter out;
 	public int shipNum = 0;	// Identifies the ship type
-	private String username;
-	private String password;
 	
 	/**
 	 * Creates client object
@@ -77,6 +86,34 @@ public class Client {
 		JPanel trackPanel = new JPanel();
 		trackPanel.setBackground(Color.green);
 		trackPanel.setLayout(new GridLayout(10, 10, 2, 2));
+		
+		// Create JPanel for the chatbox
+		JPanel chatPanel = new JPanel();
+		chatPanel.setBackground(Color.gray);
+		chatboxField.setEditable(false);
+		chatPanel.setLayout(new GridLayout(2, 1));
+		chatPanel.add(chatboxField);
+		chatPanel.add(chatTextField);
+		
+		
+
+		chatTextField.setText("Chat Here");
+		
+		frame.pack();
+		
+		chatTextField.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	try {
+					//doc.insertString(0, chatTextField.getText()+"\n", null);
+					doc.insertString(doc.getLength(), "\nYou: "+chatTextField.getText(), null);
+					out.println("CHAT "+chatTextField.getText());
+					chatTextField.setText("");
+				} catch (Exception i) {
+					System.out.println(i);
+				}
+		    }
+		});
 		
 		// Adds listener to client login button
 		clientLogin.btnLogin.addActionListener(new ActionListener() {
@@ -124,6 +161,7 @@ public class Client {
 			}
 			frame.getContentPane().add(trackPanel, BorderLayout.CENTER);
 			frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
+			frame.getContentPane().add(chatPanel, BorderLayout.CENTER);
 		}
 		
 	}
@@ -237,6 +275,9 @@ public class Client {
 					else if (response.startsWith("OTHER_PLAYER_LEFT")) {
 						JOptionPane.showMessageDialog(frame, "Other player rage quitted");
 						break;
+					}
+					else if (response.startsWith("CHAT")) {
+						doc.insertString(doc.getLength(), "\nOpponent: "+response.substring(5), null);
 					}
 				}
 				else if(playerAuth == false) {

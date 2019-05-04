@@ -94,6 +94,9 @@ class Player implements Runnable {
             else if (command.startsWith("MOVE")) {
                 processMoveCommand(Integer.parseInt(command.substring(5,6)), Integer.parseInt(command.substring(6,7)));
             }
+            else if (command.startsWith("CHAT")) {
+                processChatCommand(command.substring(5));
+            }
         }
     }
 	
@@ -199,6 +202,17 @@ class Player implements Runnable {
 		} catch (IllegalStateException e) {
 			output.println("MESSAGE " + e.getMessage());
 		}
+		
+	}
+	
+	
+	/**
+	 * Processes chat message from players
+	 * @param message
+	 * 
+	 */
+	private void processChatCommand(String message) {
+		Server.chat(message, this);
 		
 	}
 	

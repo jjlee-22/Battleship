@@ -206,13 +206,11 @@ class Server {
 			if (username.equals(entry.getKey())) {
 				if (password.equals(entry.getValue())) {
 					System.out.println("Login Matched!");
-					System.out.println(loginInfo);
 					return(true);
 				}
 			}
 		}
 
-		System.out.println(loginInfo);
 		return(false);
 	}
 	
@@ -229,9 +227,19 @@ class Server {
 				return(false);
 			}
 		}
+		
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream("data.properties"));
+			for (final String name: properties.stringPropertyNames())
+			    loginInfo.put(name, properties.getProperty(name));
+			//loginInfo = new HashMap<String, String>{properties};
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 
 		loginInfo.put(username, password);
-		Properties properties = new Properties();
+		
 		try {
 			for (Map.Entry<String,String> entry : loginInfo.entrySet()) {
 			    properties.put(entry.getKey(), entry.getValue());
@@ -245,4 +253,13 @@ class Server {
 		System.out.println(loginInfo);
 		return(true);
 	}
+	
+	/**
+	 * Handles chat messages between players
+	 * @param message
+	 * @param player
+	 */
+	public synchronized static void chat(String message, Player player) {
+		player.opponent.output.println("CHAT "+message);
+    }
 }
